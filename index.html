@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScreenTime Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .active-nav {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Main Content -->
+    <div class="max-w-md mx-auto bg-white min-h-screen relative pb-20">
+        <!-- Dashboard Screen -->
+        <div id="dashboard" class="screen active p-4">
+            <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+            
+            <!-- Today's Stats -->
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <h2 class="text-lg font-semibold">Today's Screentime</h2>
+                <div class="text-3xl font-bold text-blue-600" id="totalTime">5h 45m</div>
+                <canvas id="appUsageChart" class="mt-4"></canvas>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <button class="bg-blue-500 text-white p-3 rounded-lg" onclick="showScreen('setLimit')">
+                    <i class="bi bi-alarm"></i> Set Limit
+                </button>
+                <button class="bg-green-500 text-white p-3 rounded-lg" onclick="showScreen('challenges')">
+                    <i class="bi bi-trophy"></i> Challenges
+                </button>
+            </div>
+
+            <!-- Active Challenges -->
+            <div class="bg-white rounded-lg shadow p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">Active Challenges</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium">1 Hour Less</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-500">4/7 days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Details Screen -->
+        <div id="usage" class="screen p-4">
+            <h1 class="text-2xl font-bold mb-4">App Usage</h1>
+            <select class="w-full p-2 mb-4 border rounded" id="timeRange">
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+            </select>
+            <canvas id="usageChart" class="mb-4"></canvas>
+            <div class="space-y-4">
+                <!-- App Usage List -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold">Instagram</h3>
+                            <p class="text-sm text-gray-500">Social Media</p>
+                        </div>
+                        <span class="font-semibold">2h 15m</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Set Limit Screen -->
+        <div id="setLimit" class="screen p-4">
+            <h1 class="text-2xl font-bold mb-4">Set Daily Limit</h1>
+            <select class="w-full p-2 mb-4 border rounded">
+                <option>All Apps</option>
+                <option>Instagram</option>
+                <option>Facebook</option>
+            </select>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Time Limit</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" placeholder="Hours" class="p-2 border rounded" min="0" max="24">
+                    <input type="number" placeholder="Minutes" class="p-2 border rounded" min="0" max="59">
+                </div>
+            </div>
+            <div class="flex items-center mb-4">
+                <input type="checkbox" id="notifications" class="mr-2">
+                <label for="notifications">Enable notifications</label>
+            </div>
+            <button class="w-full bg-blue-500 text-white p-3 rounded-lg">Save Limit</button>
+        </div>
+
+        <!-- Challenges Screen -->
+        <div id="challenges" class="screen p-4">
+            <h1 class="text-2xl font-bold mb-4">Challenges</h1>
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="font-semibold">Digital Detox</h3>
+                    <p class="text-sm text-gray-500 mb-2">No phone usage after 10 PM</p>
+                    <button class="bg-green-500 text-white px-4 py-2 rounded">Join Challenge</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile" class="screen p-4">
+            <h1 class="text-2xl font-bold mb-4">Profile</h1>
+            <div class="bg-white rounded-lg shadow p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">Statistics</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-blue-600">15</p>
+                        <p class="text-sm text-gray-500">Challenges Complete</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-green-600">8</p>
+                        <p class="text-sm text-gray-500">Badges Earned</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-blue-100 p-4 rounded-lg text-center">
+                    <i class="bi bi-star-fill text-yellow-400 text-2xl"></i>
+                    <p class="text-sm mt-2">Early Bird</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
+            <div class="grid grid-cols-5 gap-1">
+                <button onclick="showScreen('dashboard')" class="p-4 text-center">
+                    <i class="bi bi-house"></i>
+                </button>
+                <button onclick="showScreen('usage')" class="p-4 text-center">
+                    <i class="bi bi-graph-up"></i>
+                </button>
+                <button onclick="showScreen('setLimit')" class="p-4 text-center">
+                    <i class="bi bi-clock"></i>
+                </button>
+                <button onclick="showScreen('challenges')" class="p-4 text-center">
+                    <i class="bi bi-trophy"></i>
+                </button>
+                <button onclick="showScreen('profile')" class="p-4 text-center">
+                    <i class="bi bi-person"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Initialize Charts
+        const ctx = document.getElementById('appUsageChart');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Social Media', 'Games', 'Productivity', 'Others'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: ['#3b82f6', '#34d399', '#f59e0b', '#9ca3af']
+                }]
+            }
+        });
+
+        const usageCtx = document.getElementById('usageChart');
+        new Chart(usageCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Hours Used',
+                    data: [5, 4, 6, 3, 7, 4, 5],
+                    backgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
